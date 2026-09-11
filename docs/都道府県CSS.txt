@@ -1,0 +1,801 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f7fafc;
+  color: #1f2937;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "Yu Gothic",
+    sans-serif;
+}
+
+
+/* =========================
+   全体
+========================= */
+
+.judge-page {
+  min-height: 100vh;
+}
+
+
+/* =========================
+   ヘッダー
+========================= */
+
+.judge-header {
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 40px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.judge-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.judge-logo-icon {
+  font-size: 32px;
+}
+
+.judge-logo h1 {
+  font-size: 22px;
+  margin: 0 0 2px;
+}
+
+.judge-logo p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.judge-nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.judge-nav a {
+  text-decoration: none;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+
+  background: #eff6ff;
+}
+
+
+/* =========================
+   メイン
+========================= */
+
+.judge-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+}
+
+
+/* =========================
+   ステータス
+========================= */
+
+.game-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 14px 18px;
+
+  background: #eef7ff;
+
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+
+  margin-bottom: 20px;
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  font-size: 14px;
+}
+
+.difficulty-badge {
+  padding: 6px 15px;
+
+  background: #16a34a;
+  color: #ffffff;
+
+  border-radius: 7px;
+
+  font-weight: 700;
+}
+
+.status-hint {
+  font-size: 15px;
+}
+
+
+/* =========================
+   2カラム
+========================= */
+
+.game-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    300px;
+
+  gap: 22px;
+}
+
+
+/* =========================
+   現在のヒント
+========================= */
+
+.current-hint-card {
+  padding: 24px;
+
+  background: #fffaf0;
+
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+
+  margin-bottom: 22px;
+}
+
+.hint-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 10px;
+}
+
+.hint-title span {
+  font-size: 26px;
+}
+
+.hint-title h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.current-hint-card p {
+  font-size: 17px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+
+/* =========================
+   選択説明
+========================= */
+
+.selection-header {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 12px;
+
+  font-size: 14px;
+}
+
+.selection-counter {
+  margin-left: 4px;
+  color: #15803d;
+}
+
+.reset-button {
+  border: 1px solid #cbd5e1;
+
+  background: #ffffff;
+
+  border-radius: 8px;
+
+  padding: 8px 12px;
+
+  color: #475569;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   都道府県グリッド
+========================= */
+
+.prefecture-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.prefecture-button {
+  position: relative;
+
+  min-height: 54px;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 8px;
+
+  background: #f8fafc;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #334155;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s,
+    border 0.15s,
+    color 0.15s,
+    transform 0.1s;
+}
+
+.prefecture-button:hover {
+  border-color: #60a5fa;
+
+  background: #eff6ff;
+}
+
+.prefecture-button:active {
+  transform: scale(0.98);
+}
+
+.check-icon {
+  display: none;
+
+  margin-right: 5px;
+
+  font-size: 18px;
+}
+
+.prefecture-button.selected {
+  background: #2563eb;
+
+  border-color: #2563eb;
+
+  color: #ffffff;
+}
+
+.prefecture-button.selected
+.check-icon {
+  display: inline;
+}
+
+
+/* =========================
+   操作ボタン
+========================= */
+
+.game-actions {
+  display: grid;
+
+  grid-template-columns:
+    1.8fr 1fr 0.85fr;
+
+  gap: 12px;
+
+  margin-top: 28px;
+}
+
+.game-actions button {
+  min-height: 66px;
+
+  border-radius: 9px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* メイン */
+
+.judge-button {
+  border: none;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 16px;
+}
+
+.judge-button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.judge-button:disabled {
+  background: #94a3b8;
+
+  cursor: not-allowed;
+
+  opacity: 0.55;
+}
+
+
+/* 次のヒント */
+
+.next-hint-button {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 10px;
+
+  background: #ffffff;
+
+  border: 2px solid #fb923c;
+
+  color: #334155;
+
+  font-size: 13px;
+}
+
+.next-hint-button > span:first-child {
+  color: #f97316;
+
+  font-size: 26px;
+}
+
+
+/* ギブアップ */
+
+.giveup-button {
+  background: #f1f5f9;
+
+  border: 1px solid #cbd5e1;
+
+  color: #475569;
+}
+
+.game-help {
+  color: #64748b;
+
+  font-size: 12px;
+
+  margin-top: 12px;
+}
+
+
+/* =========================
+   履歴
+========================= */
+
+.history-panel {
+  background: #f8fbff;
+
+  border: 1px solid #dbeafe;
+
+  border-radius: 12px;
+
+  padding: 16px;
+}
+
+.history-panel-header h2 {
+  font-size: 17px;
+
+  margin: 0 0 14px;
+}
+
+.history-container {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.history-item {
+  overflow: hidden;
+
+  border: 1px solid #dbeafe;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+}
+
+.history-item.active {
+  border-color: #fbbf24;
+
+  background: #fffbeb;
+}
+
+.history-toggle {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 13px;
+
+  border: 0;
+
+  background: transparent;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.history-content {
+  padding:
+    0 13px 14px;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+.history-item.collapsed
+.history-content {
+  display: none;
+}
+
+.history-answer {
+  padding-top: 10px;
+
+  margin-top: 12px;
+
+  border-top:
+    1px solid #e5e7eb;
+}
+
+.history-answer small {
+  color: #64748b;
+}
+
+.waiting,
+.skipped {
+  color: #94a3b8;
+
+  margin-bottom: 0;
+}
+
+.answer-tags {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-top: 7px;
+}
+
+.answer-tags span {
+  padding: 5px 7px;
+
+  background: #dbeafe;
+
+  color: #1e40af;
+
+  border-radius: 5px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+.correct-count {
+  margin-top: 10px;
+}
+
+.correct-count strong {
+  color: #f97316;
+}
+
+
+/* =========================
+   リザルト
+========================= */
+
+.result-modal {
+  display: none;
+
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1000;
+}
+
+.result-modal.show {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+.result-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    rgba(15, 23, 42, 0.6);
+}
+
+.result-card {
+  position: relative;
+
+  z-index: 2;
+
+  width: min(480px, 90%);
+
+  padding: 36px;
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  text-align: center;
+
+  box-shadow:
+    0 20px 50px
+    rgba(0, 0, 0, 0.2);
+}
+
+.result-trophy {
+  font-size: 48px;
+}
+
+.result-card h2 {
+  margin: 8px 0;
+
+  color: #16a34a;
+
+  font-size: 30px;
+}
+
+.result-message {
+  color: #475569;
+
+  margin-bottom: 24px;
+}
+
+.result-summary {
+  padding: 18px;
+
+  background: #f0fdf4;
+
+  border-radius: 10px;
+
+  margin-bottom: 22px;
+}
+
+.result-summary div {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding: 6px 0;
+}
+
+.result-summary strong {
+  color: #15803d;
+
+  font-size: 20px;
+}
+
+.correct-prefectures h3 {
+  text-align: left;
+
+  font-size: 14px;
+}
+
+.correct-prefecture-list {
+  display: flex;
+
+  gap: 8px;
+
+  margin-bottom: 24px;
+}
+
+.correct-prefecture-list span {
+  flex: 1;
+
+  padding: 9px;
+
+  background: #dbeafe;
+
+  color: #1e3a8a;
+
+  border-radius: 7px;
+
+  font-weight: 700;
+}
+
+.result-actions {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 10px;
+}
+
+.result-actions button {
+  padding: 13px;
+
+  border-radius: 8px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.restart-button {
+  border: none;
+
+  background: #16a34a;
+
+  color: #ffffff;
+}
+
+.home-button {
+  background: #f1f5f9;
+
+  border: 1px solid #cbd5e1;
+
+  color: #475569;
+}
+
+
+/* =========================
+   タブレット
+========================= */
+
+@media (max-width: 900px) {
+
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .history-panel {
+    order: 2;
+  }
+
+  .prefecture-grid {
+    grid-template-columns:
+      repeat(4, 1fr);
+  }
+
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media (max-width: 600px) {
+
+  .judge-header {
+    height: auto;
+
+    padding: 14px 16px;
+  }
+
+  .judge-logo h1 {
+    font-size: 18px;
+  }
+
+  .judge-logo p {
+    display: none;
+  }
+
+  .judge-nav a {
+    display: none;
+  }
+
+  .judge-container {
+    padding: 16px 12px 40px;
+  }
+
+  .game-status {
+    align-items: flex-start;
+
+    gap: 10px;
+
+    font-size: 12px;
+  }
+
+  .status-left {
+    gap: 8px;
+
+    flex-wrap: wrap;
+  }
+
+  .status-hint {
+    white-space: nowrap;
+  }
+
+  .current-hint-card {
+    padding: 18px;
+  }
+
+  .hint-title h2 {
+    font-size: 20px;
+  }
+
+  .current-hint-card p {
+    font-size: 14px;
+  }
+
+  .selection-header {
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+  .prefecture-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .prefecture-button {
+    min-height: 48px;
+
+    font-size: 14px;
+  }
+
+  .game-actions {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .judge-button {
+    grid-column: 1 / -1;
+  }
+
+  .result-actions {
+    grid-template-columns: 1fr;
+  }
+
+}

@@ -1,0 +1,763 @@
+<div class="judge-page">
+  <header class="judge-header">
+    <div class="judge-logo">
+      <span class="judge-logo-icon">🗾</span>
+
+      <div>
+        <h1>都道府県ジャッジ</h1>
+        <p>ヒントから隠された都道府県を推理しよう！</p>
+      </div>
+    </div>
+
+    <nav class="judge-nav">
+      <a href="#">遊び方</a>
+      <a href="#">ランキング</a>
+      <a href="#">マイページ</a>
+      <span class="user-icon">👤</span>
+    </nav>
+  </header>
+
+
+  <main class="judge-container">
+
+    <%# ===== ステータス ===== %>
+
+    <section class="game-status">
+      <div class="status-left">
+        <span class="difficulty-badge">
+          初級
+        </span>
+
+        <span>
+          候補県：
+          <strong id="candidate-count">10県</strong>
+        </span>
+
+        <span>
+          正解数：
+          <strong>3県</strong>
+        </span>
+      </div>
+
+      <div class="status-hint">
+        💡 現在のヒント：
+        <strong id="current-hint-number">1 / 5</strong>
+      </div>
+    </section>
+
+
+    <div class="game-layout">
+
+      <%# ===== 左側：ゲーム本体 ===== %>
+
+      <section class="game-main">
+
+        <div class="current-hint-card">
+          <div class="hint-title">
+            <span>💡</span>
+            <h2 id="current-hint-title">ヒント 1</h2>
+          </div>
+
+          <p id="current-hint-text">
+            正解の3県のうち、2県は人口100万人以上です。
+          </p>
+        </div>
+
+
+        <div class="selection-header">
+          <div>
+            <strong>
+              候補の都道府県を3つ選択してください
+            </strong>
+
+            <span class="selection-counter">
+              （選択中
+              <strong id="selected-count">0</strong>
+              / 3）
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="reset-button"
+            id="reset-selection"
+          >
+            ↻ 選択をリセット
+          </button>
+        </div>
+
+
+        <div
+          class="prefecture-grid"
+          id="prefecture-grid"
+        >
+
+          <% prefectures = [
+            ['北海道', 1],
+            ['青森県', 2],
+            ['東京都', 3],
+            ['鳥取県', 4],
+            ['福岡県', 5],
+            ['高知県', 6],
+            ['沖縄県', 7],
+            ['長野県', 8],
+            ['秋田県', 9],
+            ['奈良県', 10]
+          ] %>
+
+          <% prefectures.each do |name, id| %>
+            <button
+              type="button"
+              class="prefecture-button"
+              data-prefecture-id="<%= id %>"
+              data-prefecture-name="<%= name %>"
+            >
+              <span class="check-icon">✓</span>
+              <span><%= name %></span>
+            </button>
+          <% end %>
+
+        </div>
+
+
+        <div class="game-actions">
+
+          <button
+            type="button"
+            class="judge-button"
+            id="submit-answer"
+            disabled
+          >
+            <span>✓</span>
+            選択した県で判定する！
+          </button>
+
+
+          <button
+            type="button"
+            class="next-hint-button"
+            id="next-hint"
+          >
+            <span>»</span>
+
+            <span>
+              回答せずに<br>
+              次のヒントを見る
+            </span>
+          </button>
+
+
+          <button
+            type="button"
+            class="giveup-button"
+            id="giveup-button"
+          >
+            🚩 ギブアップ
+          </button>
+
+        </div>
+
+        <p class="game-help">
+          ⓘ 3つ選択すると「判定する」ボタンが押せます。
+        </p>
+
+      </section>
+
+
+
+      <%# ===== 右側：履歴 ===== %>
+
+      <aside class="history-panel">
+
+        <div class="history-panel-header">
+          <h2>これまでの履歴</h2>
+        </div>
+
+        <div
+          id="history-container"
+          class="history-container"
+        >
+
+          <article class="history-item active">
+
+            <button
+              type="button"
+              class="history-toggle"
+            >
+              <span>💡 ヒント 1（今回）</span>
+              <span>⌃</span>
+            </button>
+
+            <div class="history-content">
+
+              <p>
+                正解の3県のうち、2県は人口100万人以上です。
+              </p>
+
+              <div class="history-answer">
+                <small>あなたの回答</small>
+
+                <p class="waiting">
+                  まだ回答していません
+                </p>
+              </div>
+
+            </div>
+          </article>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+
+
+  <%# ===== リザルトモーダル ===== %>
+
+  <div
+    class="result-modal"
+    id="result-modal"
+  >
+
+    <div class="result-overlay"></div>
+
+    <section class="result-card">
+
+      <div class="result-trophy">
+        🏆
+      </div>
+
+      <h2 id="result-title">
+        ゲームクリア！
+      </h2>
+
+      <p
+        class="result-message"
+        id="result-message"
+      >
+        3個目のヒントで正解しました！
+      </p>
+
+
+      <div class="result-summary">
+
+        <div>
+          <span>🎯 正解数</span>
+          <strong id="result-correct-count">
+            3 / 3
+          </strong>
+        </div>
+
+        <div>
+          <span>💡 使用したヒント数</span>
+          <strong id="result-hint-count">
+            1
+          </strong>
+        </div>
+
+      </div>
+
+
+      <div class="correct-prefectures">
+
+        <h3>正解の都道府県</h3>
+
+        <div class="correct-prefecture-list">
+          <span>青森県</span>
+          <span>東京都</span>
+          <span>福岡県</span>
+        </div>
+
+      </div>
+
+
+      <div class="result-actions">
+
+        <button
+          type="button"
+          class="restart-button"
+          onclick="location.reload();"
+        >
+          ↻ もう一度遊ぶ
+        </button>
+
+        <button
+          type="button"
+          class="home-button"
+        >
+          🏠 トップに戻る
+        </button>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const ANSWER_COUNT = 3
+
+  // 今は画面確認用の仮正解
+  const ANSWER_IDS = [2, 3, 5]
+
+  const hints = [
+    "正解の3県のうち、2県は人口100万人以上です。",
+    "正解の3県のうち、1県はりんごの収穫量が全国TOP10です。",
+    "正解の3県には、九州地方の県が含まれています。",
+    "正解の3県のうち、1県は日本の首都です。",
+    "正解の3県は、それぞれ異なる地方にあります。"
+  ]
+
+
+  let selectedIds = []
+  let currentHintIndex = 0
+
+
+  const prefectureButtons =
+    document.querySelectorAll(".prefecture-button")
+
+  const selectedCount =
+    document.getElementById("selected-count")
+
+  const submitButton =
+    document.getElementById("submit-answer")
+
+  const resetButton =
+    document.getElementById("reset-selection")
+
+  const nextHintButton =
+    document.getElementById("next-hint")
+
+  const giveupButton =
+    document.getElementById("giveup-button")
+
+  const currentHintTitle =
+    document.getElementById("current-hint-title")
+
+  const currentHintText =
+    document.getElementById("current-hint-text")
+
+  const currentHintNumber =
+    document.getElementById("current-hint-number")
+
+  const historyContainer =
+    document.getElementById("history-container")
+
+  const resultModal =
+    document.getElementById("result-modal")
+
+
+  // =====================================
+  // 都道府県選択
+  // =====================================
+
+  prefectureButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const id =
+        Number(button.dataset.prefectureId)
+
+
+      if (selectedIds.includes(id)) {
+
+        selectedIds =
+          selectedIds.filter(
+            selectedId => selectedId !== id
+          )
+
+        button.classList.remove("selected")
+
+      } else {
+
+        if (selectedIds.length >= ANSWER_COUNT) {
+          return
+        }
+
+        selectedIds.push(id)
+
+        button.classList.add("selected")
+      }
+
+
+      updateSelection()
+    })
+
+  })
+
+
+  function updateSelection() {
+
+    selectedCount.textContent =
+      selectedIds.length
+
+    submitButton.disabled =
+      selectedIds.length !== ANSWER_COUNT
+  }
+
+
+
+  // =====================================
+  // リセット
+  // =====================================
+
+  resetButton.addEventListener("click", () => {
+    resetSelection()
+  })
+
+
+  function resetSelection() {
+
+    selectedIds = []
+
+    prefectureButtons.forEach(button => {
+      button.classList.remove("selected")
+    })
+
+    updateSelection()
+  }
+
+
+
+  // =====================================
+  // 回答
+  // =====================================
+
+  submitButton.addEventListener("click", () => {
+
+    const hitCount =
+      selectedIds.filter(id =>
+        ANSWER_IDS.includes(id)
+      ).length
+
+
+    const selectedNames =
+      selectedIds.map(id => {
+
+        return document.querySelector(
+          `[data-prefecture-id="${id}"]`
+        ).dataset.prefectureName
+
+      })
+
+
+    updateCurrentHistory(
+      selectedNames,
+      hitCount
+    )
+
+
+    if (hitCount === ANSWER_COUNT) {
+
+      showResult(true, hitCount)
+      return
+    }
+
+
+    setTimeout(() => {
+
+      resetSelection()
+      showNextHint()
+
+    }, 700)
+
+  })
+
+
+
+  // =====================================
+  // 次のヒント
+  // =====================================
+
+  nextHintButton.addEventListener("click", () => {
+
+    updateSkippedHistory()
+
+    resetSelection()
+
+    showNextHint()
+  })
+
+
+  function showNextHint() {
+
+    if (
+      currentHintIndex >=
+      hints.length - 1
+    ) {
+      return
+    }
+
+
+    currentHintIndex++
+
+
+    currentHintTitle.textContent =
+      `ヒント ${currentHintIndex + 1}`
+
+    currentHintText.textContent =
+      hints[currentHintIndex]
+
+    currentHintNumber.textContent =
+      `${currentHintIndex + 1} / ${hints.length}`
+
+
+    addHistoryItem()
+  }
+
+
+
+  // =====================================
+  // 履歴
+  // =====================================
+
+  function addHistoryItem() {
+
+    document
+      .querySelectorAll(".history-item")
+      .forEach(item => {
+
+        item.classList.remove("active")
+
+      })
+
+
+    const item =
+      document.createElement("article")
+
+
+    item.className =
+      "history-item active"
+
+
+    item.innerHTML = `
+      <button
+        type="button"
+        class="history-toggle"
+      >
+        <span>
+          💡 ヒント ${currentHintIndex + 1}（今回）
+        </span>
+
+        <span>⌃</span>
+      </button>
+
+      <div class="history-content">
+
+        <p>
+          ${hints[currentHintIndex]}
+        </p>
+
+        <div class="history-answer">
+
+          <small>
+            あなたの回答
+          </small>
+
+          <p class="waiting">
+            まだ回答していません
+          </p>
+
+        </div>
+
+      </div>
+    `
+
+
+    historyContainer.prepend(item)
+
+    activateAccordion()
+  }
+
+
+
+  function updateCurrentHistory(
+    names,
+    hitCount
+  ) {
+
+    const activeItem =
+      document.querySelector(
+        ".history-item.active"
+      )
+
+    if (!activeItem) return
+
+
+    const answer =
+      activeItem.querySelector(
+        ".history-answer"
+      )
+
+
+    answer.innerHTML = `
+      <small>
+        あなたの回答
+      </small>
+
+      <div class="answer-tags">
+
+        ${names.map(name =>
+          `<span>${name}</span>`
+        ).join("")}
+
+      </div>
+
+      <div class="correct-count">
+        正解数：
+        <strong>
+          ${hitCount} / ${ANSWER_COUNT}
+        </strong>
+      </div>
+    `
+
+  }
+
+
+
+  function updateSkippedHistory() {
+
+    const activeItem =
+      document.querySelector(
+        ".history-item.active"
+      )
+
+    if (!activeItem) return
+
+
+    const answer =
+      activeItem.querySelector(
+        ".history-answer"
+      )
+
+
+    answer.innerHTML = `
+      <small>
+        あなたの回答
+      </small>
+
+      <p class="skipped">
+        回答せず次のヒントを取得しました
+      </p>
+    `
+
+  }
+
+
+
+  // =====================================
+  // アコーディオン
+  // =====================================
+
+  function activateAccordion() {
+
+    document
+      .querySelectorAll(".history-toggle")
+      .forEach(toggle => {
+
+        toggle.onclick = () => {
+
+          const item =
+            toggle.closest(
+              ".history-item"
+            )
+
+          item.classList.toggle(
+            "collapsed"
+          )
+
+        }
+
+      })
+
+  }
+
+  activateAccordion()
+
+
+
+  // =====================================
+  // ギブアップ
+  // =====================================
+
+  giveupButton.addEventListener(
+    "click",
+    () => {
+
+      showResult(false, 0)
+
+    }
+  )
+
+
+
+  // =====================================
+  // リザルト
+  // =====================================
+
+  function showResult(
+    isClear,
+    hitCount
+  ) {
+
+    const title =
+      document.getElementById(
+        "result-title"
+      )
+
+    const message =
+      document.getElementById(
+        "result-message"
+      )
+
+    const correctCount =
+      document.getElementById(
+        "result-correct-count"
+      )
+
+    const hintCount =
+      document.getElementById(
+        "result-hint-count"
+      )
+
+
+    if (isClear) {
+
+      title.textContent =
+        "ゲームクリア！"
+
+      message.textContent =
+        `${currentHintIndex + 1}個目のヒントで正解しました！`
+
+    } else {
+
+      title.textContent =
+        "ゲーム終了"
+
+      message.textContent =
+        "今回はギブアップしました。"
+    }
+
+
+    correctCount.textContent =
+      `${hitCount} / ${ANSWER_COUNT}`
+
+    hintCount.textContent =
+      currentHintIndex + 1
+
+
+    resultModal.classList.add("show")
+
+  }
+
+
+})
+</script>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>都道府県ジャッジ - プロトタイプ</title>
+  <style>
+    :root {
+      --primary-color: #2b6cb0;
+      --bg-color: #f7fafc;
+      --card-bg: #ffffff;
+      --hint-bg: #fffaf0;
+      --hint-border: #dd6b20;
+    }
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+      background-color: var(--bg-color);
+      color: #2d3748;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    header {
+      text-align: center;
+      border-bottom: 2px solid #edf2f7;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: var(--primary-color);
+    }
+    
+    /* 1, 3. ステータス表示（文言の見直し・動的難易度対応構造） */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #ebf8ff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
+
+    /* 都道府県カード選択エリア */
+    .grid-instructions {
+      font-size: 0.85rem;
+      color: #718096;
+      margin-bottom: 8px;
+    }
+    .prefecture-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .pref-card {
+      background: #edf2f7;
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+    .pref-card.selected {
+      background: #bee3f8;
+      border-color: var(--primary-color);
+      color: #2b6cb0;
+    }
+
+    /* 1. アクションボタン群 */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .btn-submit {
+      background: var(--primary-color);
+      color: white;
+    }
+    .btn-next-hint {
+      background: #ed8936;
+      color: white;
+    }
+    .btn-giveup {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    /* タイムライン・履歴エリア */
+    .history-section {
+      border-top: 2px solid #edf2f7;
+      padding-top: 16px;
+    }
+    .history-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #4a5568;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .history-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .history-card.current {
+      border-color: var(--hint-border);
+      background: var(--hint-bg);
+    }
+    .hint-header {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #c05621;
+      margin-bottom: 6px;
+    }
+    .hint-body {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+    .answer-block {
+      background: #ffffff;
+      border: 1px dashed #cbd5e0;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+    .answer-label {
+      color: #718096;
+      font-size: 0.75rem;
+      margin-bottom: 2px;
+    }
+    .answer-value {
+      font-weight: bold;
+      color: #2d3748;
+    }
+    .result-value {
+      margin-top: 6px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    .skipped-label {
+      color: #a0aec0;
+      font-style: italic;
+    }
+
+    /* 5. ゲーム終了（リザルト）モーダル */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      width: 80%;
+      text-align: center;
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    }
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+    .answer-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+    .answer-list li {
+      padding: 4px 0;
+    }
+    .btn-restart {
+      background: #38a169;
+      color: white;
+      width: 100%;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>都道府県ジャッジ 🧩</h1>
+  </header>
+
+  <div class="status-bar">
+    <span id="target-info">隠れた正解: 3県</span>
+    <span id="hint-count-label">現在のヒント: 1</span>
+  </div>
+
+  <div class="grid-instructions">都道府県を<span id="target-select-num">3</span>つ選択してください（<span id="selected-count">0</span>/<span id="target-select-num-2">3</span>）</div>
+  <div class="prefecture-grid" id="pref-grid">
+    </div>
+
+  <div class="actions">
+    <div class="btn-row">
+      <button class="btn-next-hint" id="next-hint-btn">回答せずに次のヒントを見る</button>
+      <button class="btn-submit" id="submit-btn" disabled>選択した県で判定する！</button>
+    </div>
+    <button class="btn-giveup" id="giveup-btn">ギブアップ</button>
+  </div>
+
+  <div class="history-section">
+    <div class="history-title">ヒントと回答の履歴</div>
+    <div class="history-list" id="history-list">
+      </div>
+  </div>
+
+  <div class="modal-overlay" id="result-modal">
+    <div class="modal-content">
+      <div class="modal-title" id="modal-title">ゲーム終了</div>
+      <p id="modal-desc">正解はこの県でした</p>
+      <ul class="answer-list" id="modal-answer-list">
+        </ul>
+      <button class="btn-restart" onclick="location.reload()">もう一度遊ぶ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 4. 難易度設定のデータ構造（Rails移行時を見越した設計）
+  const DIFFICULTY_SETTINGS = {
+    easy: { candidateCount: 10, answerCount: 3 }
+    // mid: { candidateCount: 20, answerCount: 5 },
+    // hard: { candidateCount: 25, answerCount: 7 }
+  };
+
+  const currentDifficulty = 'easy'; // 現在は初級固定
+  const config = DIFFICULTY_SETTINGS[currentDifficulty];
+
+  const candidates = [
+    { id: 1, name: "青森県", isAnswer: true },
+    { id: 2, name: "東京都", isAnswer: true },
+    { id: 3, name: "鳥取県", isAnswer: false },
+    { id: 4, name: "福岡県", isAnswer: true },
+    { id: 5, name: "高知県", isAnswer: false },
+    { id: 6, name: "北海道", isAnswer: false },
+    { id: 7, name: "沖縄県", isAnswer: false },
+    { id: 8, name: "長野県", isAnswer: false },
+    { id: 9, name: "秋田県", isAnswer: false },
+    { id: 10, name: "奈良県", isAnswer: false }
+  ];
+
+  const dummyHints = [
+    "正解の3県のうち、2県は人口100万人以上です。",
+    "正解の3県のうち、1県はりんごの収穫量が全国TOP10です。",
+    "正解の3県には、九州地方の県が含まれています。",
+    "正解の3県のうち、1県は日本の首都です。"
+  ];
+
+  let selectedIds = [];
+  let currentHintIndex = 1;
+
+  const gridContainer = document.getElementById('pref-grid');
+  const selectedCountEl = document.getElementById('selected-count');
+  const submitBtn = document.getElementById('submit-btn');
+  const nextHintBtn = document.getElementById('next-hint-btn');
+  const hintCountLabel = document.getElementById('hint-count-label');
+  const historyListEl = document.getElementById('history-list');
+
+  function initGrid() {
+    gridContainer.innerHTML = '';
+    candidates.forEach(pref => {
+      const card = document.createElement('div');
+      card.className = 'pref-card';
+      card.textContent = pref.name;
+      card.dataset.id = pref.id;
+      card.addEventListener('click', () => toggleSelect(pref.id, card));
+      gridContainer.appendChild(card);
+    });
+  }
+
+  function toggleSelect(id, element) {
+    if (selectedIds.includes(id)) {
+      selectedIds = selectedIds.filter(item => item !== id);
+      element.classList.remove('selected');
+    } else {
+      if (selectedIds.length < config.answerCount) {
+        selectedIds.push(id);
+        element.classList.add('selected');
+      }
+    }
+    selectedCountEl.textContent = selectedIds.length;
+    submitBtn.disabled = selectedIds.length !== config.answerCount;
+  }
+
+  // ヒントカード作成
+  function renderNewHintCard(hintNum) {
+    const hintText = dummyHints[(hintNum - 1) % dummyHints.length];
+    
+    const previousCard = historyListEl.querySelector('.history-card.current');
+    if (previousCard) {
+      previousCard.classList.remove('current');
+    }
+
+    const card = document.createElement('div');
+    card.className = 'history-card current';
+    card.id = `hint-card-${hintNum}`;
+    card.innerHTML = `
+      <div class="hint-header">💡 ヒント ${hintNum}</div>
+      <div class="hint-body">${hintText}</div>
+      <div class="answer-block" id="answer-block-${hintNum}">
+        <div class="answer-label">あなたの回答</div>
+        <div class="answer-value" style="color: #a0aec0;">→ 回答・判定待ち</div>
+      </div>
+    `;
+    
+    historyListEl.prepend(card);
+    hintCountLabel.textContent = `現在のヒント: ${hintNum}`;
+  }
+
+  // 1 & 2. 「回答せずに次のヒントを見る」処理
+  nextHintBtn.addEventListener('click', () => {
+    const currentBlock = document.getElementById(`answer-block-${currentHintIndex}`);
+    currentBlock.innerHTML = `
+      <div class="answer-label">あなたの回答</div>
+      <div class="answer-value skipped-label">（回答をスキップして次のヒントを取得しました）</div>
+    `;
+    
+    resetSelection();
+    currentHintIndex++;
+    renderNewHintCard(currentHintIndex);
+  });
+
+  // 判定処理
+  submitBtn.addEventListener('click', () => {
+    const hitCount = selectedIds.filter(id => {
+      const target = candidates.find(c => c.id === id);
+      return target && target.isAnswer;
+    }).length;
+
+    const selectedNames = selectedIds.map(id => candidates.find(c => c.id === id).name).join('・');
+
+    const currentBlock = document.getElementById(`answer-block-${currentHintIndex}`);
+    currentBlock.innerHTML = `
+      <div class="answer-label">あなたの回答</div>
+      <div class="answer-value">${selectedNames}</div>
+      <div class="result-value">判定結果：正解 ${hitCount} / ${config.answerCount} 県</div>
+    `;
+
+    // 5. クリア時の終了画面呼び出し
+    if (hitCount === config.answerCount) {
+      showEndGameModal(true);
+      return;
+    }
+
+    resetSelection();
+    currentHintIndex++;
+    renderNewHintCard(currentHintIndex);
+  });
+
+  // 5. ギブアップ時の終了画面呼び出し
+  document.getElementById('giveup-btn').addEventListener('click', () => {
+    showEndGameModal(false);
+  });
+
+  function resetSelection() {
+    selectedIds = [];
+    selectedCountEl.textContent = 0;
+    document.querySelectorAll('.pref-card').forEach(card => card.classList.remove('selected'));
+    submitBtn.disabled = true;
+  }
+
+  // 5. ゲーム終了画面（モーダル）表示
+  function showEndGameModal(isClear) {
+    const modal = document.getElementById('result-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const answerListEl = document.getElementById('modal-answer-list');
+
+    if (isClear) {
+      modalTitle.textContent = "🎉 ゲームクリア！";
+      modalDesc.textContent = `${currentHintIndex}個目のヒントで見事すべての正解を当てました！`;
+    } else {
+      modalTitle.textContent = "ゲーム終了 (ギブアップ)";
+      modalDesc.textContent = "正解はこの都道府県でした：";
+    }
+
+    const answers = candidates.filter(c => c.isAnswer);
+    answerListEl.innerHTML = answers.map(a => `<li>${a.name}</li>`).join('');
+
+    modal.classList.add('active');
+  }
+
+  // 初期化
+  initGrid();
+  renderNewHintCard(1);
+</script>
+</body>
+</html>
