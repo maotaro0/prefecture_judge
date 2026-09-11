@@ -12,7 +12,7 @@
       <p>ヒントを使って正解を推理しましょう</p>
     </div>
 
-    <button class="start-button" type="button">
+    <%= button_to "ゲームスタート", start_game_path, method: :post, class: "start-button" %>
       ゲームスタート
     </button>
   </section>
