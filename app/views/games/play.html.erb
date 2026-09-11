@@ -1,0 +1,13 @@
+<main class="game-page">
+  <h1>都道府県ジャッジ</h1>
+
+  <p>正解だと思う3つの都道府県を選んでください。</p>
+
+  <div class="prefecture-list">
+    <% @candidate_prefectures.each do |prefecture| %>
+      <div class="prefecture-card">
+        <%= prefecture.name %>
+      </div>
+    <% end %>
+  </div>
+</main>
