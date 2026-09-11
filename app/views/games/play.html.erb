@@ -1,13 +1,34 @@
 <main class="game-page">
-  <h1>都道府県ジャッジ</h1>
+  <section class="game-container">
+    <h1 class="game-title">都道府県ジャッジ</h1>
 
-  <p>正解だと思う3つの都道府県を選んでください。</p>
+    <p class="game-description">
+      正解だと思う3つの都道府県を選んでください。
+    </p>
 
-  <div class="prefecture-list">
-    <% @candidate_prefectures.each do |prefecture| %>
-      <div class="prefecture-card">
-        <%= prefecture.name %>
+    <%= form_with url: "#", method: :post, local: true do %>
+      <div class="prefecture-list">
+        <% @candidate_prefectures.each do |prefecture| %>
+          <button
+            class="prefecture-card"
+            type="button"
+            data-prefecture-id="<%= prefecture.id %>"
+          >
+            <%= prefecture.name %>
+          </button>
+        <% end %>
       </div>
+
+      <input
+        type="hidden"
+        name="selected_prefecture_ids"
+        id="selected-prefecture-ids"
+        value=""
+      >
+
+      <button type="submit" class="answer-button" disabled>
+        回答する
+      </button>
     <% end %>
-  </div>
+  </section>
 </main>
