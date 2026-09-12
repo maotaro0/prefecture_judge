@@ -1,0 +1,24 @@
+<main class="result-page">
+  <section class="result-container">
+
+    <% if @is_correct %>
+      <h1 class="result-title">正解！</h1>
+    <% else %>
+      <h1 class="result-title">不正解</h1>
+    <% end %>
+
+    <p class="result-message">
+      正解の都道府県はこちらです。
+    </p>
+
+    <div class="answer-prefectures">
+      <% @answer_prefectures.each do |prefecture| %>
+        <div class="answer-prefecture">
+          <%= prefecture.name %>
+        </div>
+      <% end %>
+    </div>
+
+    <%= button_to "もう一度遊ぶ", start_game_path, method: :post, class: "retry-button" %>
+  </section>
+</main>
