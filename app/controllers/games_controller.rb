@@ -14,4 +14,28 @@ class GamesController < ApplicationController
       id: session[:candidate_prefecture_ids]
     )
   end
+
+   def answer
+  selected_ids = params[:selected_prefecture_ids].split(",").map(&:to_i)
+
+  if selected_ids.length != 3
+    redirect_to game_path
+    return
+  end
+
+  answer_ids = session[:answer_prefecture_ids]
+
+  session[:is_correct] = selected_ids.sort == answer_ids.sort
+
+  redirect_to game_result_path
+end
+
+  def result
+    @is_correct = session[:is_correct]
+    @answer_prefectures = Prefecture.where(
+      id: session[:answer_prefecture_ids]
+    )
+  end
+
+
 end
