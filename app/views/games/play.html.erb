@@ -6,7 +6,7 @@
       正解だと思う3つの都道府県を選んでください。
     </p>
 
-    <%= form_with url: "#", method: :post, local: true do %>
+    <%= form_with url: answer_game_path, method: :post, local: true do %>
       <div class="prefecture-list">
         <% @candidate_prefectures.each do |prefecture| %>
           <button
