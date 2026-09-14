@@ -10,11 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_11_210617) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_14_091235) do
   create_table "prefectures", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "region"
+    t.boolean "coastal"
   end
 
 end
