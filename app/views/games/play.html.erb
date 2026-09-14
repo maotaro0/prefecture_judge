@@ -6,6 +6,14 @@
       正解だと思う3つの都道府県を選んでください。
     </p>
 
+    <div class="hint-area">
+     <p class="hint-text">
+      <%= @current_hint[:text] %> → <%= @current_hint[:count] %> / 3
+     </p>
+
+      <%= link_to "次のヒント", request.path, class: "hint-button" %>
+    </div>
+
     <%= form_with url: answer_game_path, method: :post, local: true do %>
       <div class="prefecture-list">
         <% @candidate_prefectures.each do |prefecture| %>
