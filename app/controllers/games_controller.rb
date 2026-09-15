@@ -65,18 +65,19 @@ class GamesController < ApplicationController
     session[:used_hint_keys] ||= []
 
     available_hints =
-      @hints.reject do |hint|
+     @hints.reject do |hint|
        session[:used_hint_keys].include?(hint[:key])
-     end
+      end
 
-   if available_hints.empty?
-      session[:used_hint_keys] = []
-      available_hints = @hints
+    if available_hints.any?
+      @current_hint = available_hints.sample
+      session[:used_hint_keys] << @current_hint[:key]
     end
 
-   @current_hint = available_hints.sample
-
-   session[:used_hint_keys] << @current_hint[:key]
+    @displayed_hints =
+      session[:used_hint_keys].filter_map do |key|
+       @hints.find { |hint| hint[:key] == key }
+    end
   end
 
    def answer
@@ -87,6 +88,8 @@ class GamesController < ApplicationController
     return
   end
 
+  session[:selected_prefecture_ids] = selected_ids
+
   answer_ids = session[:answer_prefecture_ids]
 
   session[:is_correct] = selected_ids.sort == answer_ids.sort
@@ -95,6 +98,8 @@ class GamesController < ApplicationController
 end
 
   def result
+    @selected_prefectures =
+      Prefecture.where(id: session[:selected_prefecture_ids])
     @is_correct = session[:is_correct]
     @answer_prefectures = Prefecture.where(
       id: session[:answer_prefecture_ids]

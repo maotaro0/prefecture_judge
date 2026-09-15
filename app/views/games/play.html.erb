@@ -7,14 +7,28 @@
     </p>
 
     <div class="hint-area">
-     <p class="hint-text">
-      <%= @current_hint[:text] %> → <%= @current_hint[:count] %> / 3
-     </p>
+     <p class="hint-title">ヒント</p>
 
-      <%= link_to "次のヒント", request.path, class: "hint-button" %>
-    </div>
+     <div class="hint-list">
+       <% @displayed_hints.each do |hint| %>
+        <p class="hint-text">
+          <%= hint[:text] %> → <%= hint[:count] %> / 3
+        </p>
+       <% end %>
+      </div>
+
+      <% if @displayed_hints.length < @hints.length %>
+        <%= link_to "次のヒント", request.path, class: "hint-button" %>
+      <% end %>
+   </div>
 
     <%= form_with url: answer_game_path, method: :post, local: true do %>
+       <p class="selection-count">
+        選択中：<span id="selected-count">0</span> / 3
+       </p>
+       <p class="selection-message" id="selection-message"></p>
+
+
       <div class="prefecture-list">
         <% @candidate_prefectures.each do |prefecture| %>
           <button

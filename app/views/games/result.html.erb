@@ -2,23 +2,46 @@
   <section class="result-container">
 
     <% if @is_correct %>
-      <h1 class="result-title">正解！</h1>
+      <h1 class="result-title correct">正解！</h1>
     <% else %>
-      <h1 class="result-title">不正解</h1>
+      <h1 class="result-title incorrect">不正解</h1>
     <% end %>
 
-    <p class="result-message">
-      正解の都道府県はこちらです。
-    </p>
+    <div class="result-section">
+      <p class="result-heading">
+        あなたの回答
+      </p>
 
-    <div class="answer-prefectures">
-      <% @answer_prefectures.each do |prefecture| %>
-        <div class="answer-prefecture">
-          <%= prefecture.name %>
-        </div>
-      <% end %>
+      <div class="answer-prefectures">
+        <% @selected_prefectures.each do |prefecture| %>
+          <div class="answer-prefecture">
+            <%= prefecture.name %>
+          </div>
+        <% end %>
+      </div>
     </div>
 
-    <%= button_to "もう一度遊ぶ", start_game_path, method: :post, class: "retry-button" %>
+    <div class="result-section">
+      <p class="result-heading">
+        正解
+      </p>
+
+      <div class="answer-prefectures">
+        <% @answer_prefectures.each do |prefecture| %>
+          <div class="answer-prefecture">
+            <%= prefecture.name %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%= button_to "もう一度遊ぶ",
+      start_game_path,
+      method: :post,
+      class: "retry-button"
+    %>
+
+    <%= link_to "トップへ戻る", root_path, class: "back-button" %>
+
   </section>
 </main>

@@ -2,6 +2,8 @@ document.addEventListener("turbo:load", () => {
   const prefectureCards = document.querySelectorAll(".prefecture-card");
   const selectedInput = document.querySelector("#selected-prefecture-ids");
   const answerButton = document.querySelector(".answer-button");
+  const selectedCount = document.querySelector("#selected-count");
+  const selectionMessage = document.querySelector("#selection-message");
 
   prefectureCards.forEach((card) => {
     card.addEventListener("click", () => {
@@ -11,6 +13,9 @@ document.addEventListener("turbo:load", () => {
         card.classList.remove("selected");
       } else if (selectedCards.length < 3) {
         card.classList.add("selected");
+        selectionMessage.textContent = "";
+      } else {
+        selectionMessage.textContent = "選択できる都道府県は3つまでです。";
       }
 
       updateSelectedPrefectures();
@@ -26,5 +31,6 @@ document.addEventListener("turbo:load", () => {
 
     selectedInput.value = selectedIds.join(",");
     answerButton.disabled = selectedIds.length !== 3;
+    selectedCount.textContent = selectedIds.length;
   }
 });
